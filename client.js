@@ -24,7 +24,7 @@ const client = new ApiClient();
 const store = createStore(browserHistory, client, window.__data);
 const history = syncHistoryWithStore(browserHistory, store);
 
-Raven.config(config.sentryClient).install()
+// Raven.config(config.sentryClient).install()
 
 window.quranDebug = debug;
 window.ReactDOM = ReactDOM; // For chrome dev tool support

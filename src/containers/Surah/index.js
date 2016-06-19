@@ -111,22 +111,15 @@ const ayahRangeSize = 30;
     const surah: Object = state.surahs.entities[surahId];
     const ayahs: Object = state.ayahs.entities[surahId];
     const ayahIds = new Set(Object.keys(ayahs).map(key => parseInt(key.split(':')[1], 10)));
-    ayahIds.first = function() {return [...this][0];};
-    ayahIds.last = function() {return [...this][[...this].length - 1];};
-
-    const currentWord = state.ayahs.currentWord;
-    const currentAyah = state.ayahs.currentAyah;
-    const isStarted = state.audioplayer.isStarted;
-    const isEndOfSurah = ayahIds.last() === surah.ayat;
 
     return {
-      isStarted,
-      currentWord,
-      currentAyah,
       surah,
       ayahs,
-      isEndOfSurah,
       ayahIds,
+      isStarted: state.audioplayer.isStarted,
+      currentWord: state.ayahs.currentWord,
+      currentAyah: state.ayahs.currentAyah,
+      isEndOfSurah: ayahIds.length === surah.ayat,
       surahs: state.surahs.entities,
       isLoading: state.ayahs.loading,
       isLoaded: state.ayahs.loaded,
@@ -151,20 +144,16 @@ export default class Surah extends Component {
       this.props.surah != nextProps.surah,
       this.props.currentAyah != nextProps.currentAyah,
       this.props.isEndOfSurah != nextProps.isEndOfSurah,
-      this.props.ayahIds != nextProps.ayahIds,
+      this.props.ayahIds.size != nextProps.ayahIds.size,
       this.props.surahs != nextProps.surahs,
       this.props.isLoading != nextProps.isLoading,
       this.props.isLoaded != nextProps.isLoaded,
       this.props.options != nextProps.options
     ];
 
-    return  conditions.some(condition => condition);
-  }
-  // If shouldComponentUpdate returns false, then __render() will be completely skipped__ until the next state change.
-  // In addition, __componentWillUpdate and componentDidUpdate will not be called__.
+    console.log(conditions);
 
-  constructor() {
-    super(...arguments);
+    return  conditions.some(condition => condition);
   }
 
   state = {
@@ -172,7 +161,7 @@ export default class Surah extends Component {
   };
 
   componentWillMount() {
-    const {params, surah, push } = this.props;
+    const { params, surah, push } = this.props;
 
     if (params.range && params.range.includes('-')) {
       const start = parseInt(params.range.split('-')[0], 10);
@@ -237,8 +226,8 @@ export default class Surah extends Component {
 
   handleOptionChange(payload) {
     const { setOptionDispatch, loadAyahsDispatch, surah, ayahIds, options } = this.props;
-    const from = ayahIds.first();
-    const to = ayahIds.last();
+    const from = this.getFirst();
+    const to = this.getLast();
 
     setOptionDispatch(payload);
     loadAyahsDispatch(surah.id, from, to, Object.assign({}, options, payload));
@@ -276,7 +265,7 @@ export default class Surah extends Component {
       return;
     }
 
-    if (ayahNum > (ayahIds.last() + 10) || ayahNum < ayahIds.first()) {
+    if (ayahNum > (this.getLast() + 10) || ayahNum < this.getFirst()) {
       // This is beyond lazy loading next page.
       return push(`/${surah.id}/${ayahNum}-${ayahNum + 10}`);
     }
@@ -286,11 +275,22 @@ export default class Surah extends Component {
     }, 1000)); // then scroll to it
   }
 
+  getLast() {
+    const { ayahIds } = this.props;
+
+    return [...ayahIds][[...ayahIds].length - 1];
+  }
+
+  getFirst() {
+    const { ayahIds } = this.props;
+
+    return [...ayahIds][0];
+  }
 
   lazyLoadAyahs(callback) {
     const { loadAyahsDispatch, ayahIds, surah, isEndOfSurah, options } = this.props;
 
-    const range = [ayahIds.first(), ayahIds.last()];
+    const range = [this.getFirst(), this.getLast()];
     let size = 10;
 
     if ((range[1] - range[0] + 1) < 10) {

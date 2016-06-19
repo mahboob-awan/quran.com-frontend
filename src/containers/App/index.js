@@ -8,11 +8,11 @@ import Grid from 'react-bootstrap/lib/Grid';
 import Row from 'react-bootstrap/lib/Row';
 import Col from 'react-bootstrap/lib/Col';
 
-import FontStyles from '../../components/FontStyles';
-
 import debug from '../../helpers/debug';
 import config from '../../config';
 import metricsConfig from '../../helpers/metrics';
+
+import FontStyles from 'components/FontStyles';
 
 const styles = require('./style.scss');
 
@@ -37,7 +37,10 @@ export default class App extends Component {
 
     return (
       <div>
-        <Helmet {...config.app.head}/>
+        <Helmet
+          {...config.app.head}
+          onChangeClientState={(newState) => console.log(newState)}
+        />
         <FontStyles />
         {children}
         <footer className={styles.footer}>
