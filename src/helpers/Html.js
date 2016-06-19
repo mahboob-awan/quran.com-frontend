@@ -17,6 +17,7 @@ class Html extends React.Component {
           {head.meta.toComponent()}
           {head.link.toComponent()}
           {head.script.toComponent()}
+          {head.style.toComponent()}
 
           {Object.keys(assets.styles).map((style, i) => (
             <link

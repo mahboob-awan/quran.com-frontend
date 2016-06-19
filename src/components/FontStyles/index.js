@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux';
-import Helmet from 'react-helmet';
 import { fontFaceStyle, fontFaceStyleLoaded } from '../../helpers/buildFontFaces';
 import { load } from 'redux/modules/fontFaces';
+
+import debug from 'helpers/debug';
 
 @connect(
   state => ({
@@ -15,8 +16,14 @@ export default class FontStyles extends Component {
     fontFaces: PropTypes.object.isRequired
   };
 
+  shouldComponentUpdate(nextProps) {
+    return this.props.fontFaces !== nextProps.fontFaces;
+  }
+
   render() {
     const { fontFaces, load } = this.props; // eslint-disable-line no-shadow
+    console.log(fontFaces);
+    debug('component:FontStyles', 'render');
 
     if (__CLIENT__) {
       const FontFaceObserver = require('fontfaceobserver');
@@ -29,11 +36,18 @@ export default class FontStyles extends Component {
     }
 
     return (
-      <Helmet
-        style={Object.keys(fontFaces).map(className => ({
-          cssText: fontFaces[className] ? fontFaceStyleLoaded(className) : fontFaceStyle(className)
-        }))}
-      />
+      <div>
+        {
+          Object.keys(fontFaces).map(className => (
+            <style
+              key={className}
+              dangerouslySetInnerHTML={{
+                __html: fontFaces[className] ? `${fontFaceStyle(className)} ${fontFaceStyleLoaded(className)}` : fontFaceStyle(className)
+              }}
+            />
+          ))
+        }
+      </div>
     );
   }
 }
