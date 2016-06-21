@@ -4,10 +4,11 @@ import { fontFaceStyle, fontFaceStyleLoaded } from '../../helpers/buildFontFaces
 import { load } from 'redux/modules/fontFaces';
 
 import debug from 'helpers/debug';
+import selector from './selector';
 
 @connect(
   state => ({
-    fontFaces: state.fontFaces
+    fontFaces: selector(state)
   }),
   { load }
 )
@@ -17,12 +18,11 @@ export default class FontStyles extends Component {
   };
 
   shouldComponentUpdate(nextProps) {
-    return this.props.fontFaces !== nextProps.fontFaces;
+    return JSON.stringify(this.props.fontFaces) !== JSON.stringify(nextProps.fontFaces);
   }
 
   render() {
     const { fontFaces, load } = this.props; // eslint-disable-line no-shadow
-    console.log(fontFaces);
     debug('component:FontStyles', 'render');
 
     if (__CLIENT__) {
