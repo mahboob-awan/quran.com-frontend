@@ -59,6 +59,7 @@ class Home extends React.Component {
 
       const lastVisitedAyah = parseInt(this.props.lastVisit.ayah);
 
+
       return (
         <div className="col-md-10 col-md-offset-1">
           <div className={`row ${styles.lastVisit}`}>
@@ -68,7 +69,7 @@ class Home extends React.Component {
             <ul className="col-md-4 list-unstyled">
               <li className={`row ${styles.link}`}>
                 <Link to={`/${this.props.lastVisit.surah}/${lastVisitedAyah}-${lastVisitedAyah + 10}`}>
-                  <div className="col-xs-2 text-muted">
+                  <div className="testttt col-xs-2 text-muted">
                     {surah.id}:{this.props.lastVisit.ayah}
                   </div>
                   <div className="col-xs-7">
